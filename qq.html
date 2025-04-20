@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PL-300 Prepare the Data - MCQ Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .question-box {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 18px;
+    }
+    .options {
+      margin-top: 10px;
+    }
+    .options label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .hidden {
+      display: none;
+    }
+    #result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    #timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<h2>PL-300: Prepare the Data - MCQ Test</h2>
+<div id="timer">Time Left: <span id="time">600</span> seconds</div>
+<div id="quiz-container"></div>
+<div>
+  <button onclick="submitAnswer()">Next</button>
+</div>
+<div id="result" class="hidden"></div>
+
+<script>
+const questions = [
+  {q: "What is the first step in the data preparation process in Power BI?", options: ["Create measures", "Build visuals", "Get data", "Publish report"], answer: 2},
+  {q: "Which of the following is *not* a valid data source in Power BI Desktop?", options: ["PDF file", "Oracle database", "Azure Synapse Analytics", "Photoshop file"], answer: 3},
+  {q: "When importing data from a folder, what does Power BI do?", options: ["Loads the folder path only", "Loads only the first file", "Combines the structure of files automatically", "Imports the folder name"], answer: 2},
+  {q: "What feature allows you to connect to live datasets from Power BI Service?", options: ["Import mode", "DirectQuery", "Live Connection", "Composite Model"], answer: 2},
+  {q: "What file types can you load from SharePoint in Power BI?", options: ["Only Excel", "Only CSV", "Excel, CSV, JSON, etc.", "Only OneDrive files"], answer: 2},
+  {q: "Which Power BI mode retrieves the entire dataset at once?", options: ["Import", "DirectQuery", "Live Connection", "Composite"], answer: 0},
+  {q: "Which language does Power Query Editor use for transformation?", options: ["DAX", "SQL", "M", "R"], answer: 2},
+  {q: "What does \"Change Type\" do in Power Query?", options: ["Changes a column name", "Converts data types (e.g., text to date)", "Applies filters", "None of the above"], answer: 1},
+  {q: "Which transformation helps you add a calculated column?", options: ["Add Column > Custom Column", "Transform > Replace Values", "Home > Manage Columns", "View > Column Profile"], answer: 0},
+  {q: "What is the result of merging queries?", options: ["Filters data", "Combines rows", "Joins tables", "Transposes data"], answer: 2},
+  {q: "What step would you use to rearrange the order of columns?", options: ["Group by", "Move Columns", "Transpose", "Split Column"], answer: 1},
+  {q: "What happens if you remove rows with errors in Power Query?", options: ["Errors remain", "All error rows are replaced with null", "Error rows are deleted", "A new table is created"], answer: 2},
+  {q: "What transformation is used to combine multiple columns into one?", options: ["Merge Queries", "Split Column", "Combine Files", "Merge Columns"], answer: 3},
+  {q: "The \"Keep Rows\" option in Power Query allows you to:", options: ["Remove rows", "Delete nulls", "Retain specific rows", "Export rows"], answer: 2},
+  {q: "What happens if you do not apply changes in Power Query?", options: ["Changes are saved automatically", "Changes apply to all reports", "Changes are discarded", "It shows a warning"], answer: 3},
+  {q: "Where can you view the column quality, column distribution, and profile?", options: ["Model view", "Report view", "Data view", "Power Query > View tab"], answer: 3},
+  {q: "Which function helps you filter rows that meet certain conditions?", options: ["Remove Columns", "Keep Duplicates", "Filter Rows", "Add Index"], answer: 2},
+  {q: "You want to find and correct invalid values in a column. Which tool helps?", options: ["DAX", "Data profiling", "Quick Measure", "Modeling tab"], answer: 1},
+  {q: "The \"Remove Blank Rows\" operation affects:", options: ["Headers", "Values", "Schema", "Filters"], answer: 1},
+  {q: "To convert a date column into a year and month, you should:", options: ["Use Replace Values", "Use Column From Examples", "Change column type to text", "Delete the column"], answer: 1},
+  {q: "Which feature allows you to *not* load a table into the model but use it for transformations?", options: ["Close & Apply", "Enable Load", "Reference Query", "Disable Load"], answer: 3},
+  {q: "What does \"Close & Apply\" do in Power BI?", options: ["Saves query", "Applies and loads changes", "Only applies M code", "Saves report"], answer: 1},
+  {q: "What is the default storage mode when importing Excel data?", options: ["DirectQuery", "Live connection", "Import", "None"], answer: 2},
+  {q: "How can you preview only a sample of data in Power Query?", options: ["Use Table Preview", "Use Column Tools", "Use Data Profiling", "Power BI always loads a preview"], answer: 3},
+  {q: "You want to load only a subset of data. What should you do?", options: ["Import all and filter later", "Apply filters in Power Query", "Create a new table", "Use Power Automate"], answer: 1},
+  {q: "Which of the following is **not** part of Power Query?", options: ["Transform tab", "Data tab", "View tab", "Add Column tab"], answer: 1},
+  {q: "To use the same transformation steps on another dataset, you should:", options: ["Use M script", "Use Python", "Use AI Insights", "Use relationships"], answer: 0},
+  {q: "Power Query transformations are:", options: ["Destructive", "Reversible", "Non-deterministic", "Stored as Excel macros"], answer: 1},
+  {q: "What does the \"Advanced Editor\" in Power Query show?", options: ["DAX formulas", "Visualization code", "M code for all steps", "VBA macros"], answer: 2},
+  {q: "What is the use of the \"Reference\" option in Power Query?", options: ["Copies the original query", "Duplicates the report", "Creates a linked query", "Deletes existing query"], answer: 2}
+];
+
+let current = 0;
+let score = 0;
+let userAnswers = [];
+
+function loadQuestion() {
+  const container = document.getElementById("quiz-container");
+  container.innerHTML = "";
+
+  if (current >= questions.length) {
+    showResult();
+    return;
+  }
+
+  const qBox = document.createElement("div");
+  qBox.className = "question-box";
+
+  const qText = document.createElement("div");
+  qText.className = "question";
+  qText.textContent = (current + 1) + ". " + questions[current].q;
+  qBox.appendChild(qText);
+
+  const opts = document.createElement("div");
+  opts.className = "options";
+  questions[current].options.forEach((opt, idx) => {
+    const label = document.createElement("label");
+    label.innerHTML = `<input type='radio' name='option' value='${idx}'> ${opt}`;
+    opts.appendChild(label);
+  });
+
+  qBox.appendChild(opts);
+  container.appendChild(qBox);
+}
+
+function submitAnswer() {
+  const selected = document.querySelector("input[name='option']:checked");
+  if (!selected) {
+    alert("Please select an answer");
+    return;
+  }
+  const answer = parseInt(selected.value);
+  userAnswers.push(answer);
+  if (answer === questions[current].answer) {
+    score++;
+  }
+  current++;
+  loadQuestion();
+}
+
+function showResult() {
+  const container = document.getElementById("quiz-container");
+  container.innerHTML = "";
+  document.querySelector("button").style.display = "none";
+  const result = document.getElementById("result");
+  result.classList.remove("hidden");
+
+  let output = `<div>You scored ${score} out of ${questions.length}</div><br><ol>`;
+  questions.forEach((q, idx) => {
+    const correct = q.options[q.answer];
+    const userAnswer = q.options[userAnswers[idx]] || "No answer";
+    const color = q.answer === userAnswers[idx] ? "green" : "red";
+    output += `<li><strong>${q.q}</strong><br>Your answer: <span style='color:${color}'>${userAnswer}</span><br>Correct answer: <span style='color:green'>${correct}</span></li><br>`;
+  });
+  output += "</ol>";
+  result.innerHTML = output;
+}
+
+function startTimer() {
+  let timeLeft = 600;
+  const timeDisplay = document.getElementById("time");
+  const timer = setInterval(() => {
+    timeLeft--;
+    timeDisplay.textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      showResult();
+    }
+  }, 1000);
+}
+
+loadQuestion();
+startTimer();
+</script>
+
+</body>
+</html>
