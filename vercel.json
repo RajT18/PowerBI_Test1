@@ -1,0 +1,6 @@
+{
+    "builds": [
+      { "src": "qq.html", "use": "@vercel/static" }
+    ]
+  }
+  
